@@ -64,6 +64,12 @@ class TransportTest {
         assertThrows(IllegalArgumentException::class.java) {
             endpoint.resolve("/api/v1/health?token=secret")
         }
+        assertThrows(IllegalArgumentException::class.java) {
+            endpoint.resolve("/api/v1/../admin")
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            endpoint.resolve("/api/v1/%2e%2e/admin")
+        }
     }
 
     @Test
