@@ -84,8 +84,8 @@ class BlockingControlCenterTransport(
     }
 
     /**
-     * Performs one bounded GET request. Call this from an IO/background dispatcher.
-     * Authentication is intentionally not part of the 0.1.0 transport baseline.
+     * Выполняет один ограниченный GET-запрос. Вызывать из IO/background dispatcher.
+     * Аутентификация намеренно не входит в transport baseline версии 0.1.0.
      */
     fun get(path: String, correlationId: String? = null): ControlCenterHttpResponse {
         require(correlationId == null || CORRELATION_ID_RE.matches(correlationId)) {
