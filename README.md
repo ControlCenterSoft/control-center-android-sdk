@@ -1,25 +1,27 @@
 # Control Center Android SDK
 
-Shared Android API contract baseline for Control Center Client and Admin.
+Общая базовая линия Android API-контрактов для Control Center Client и Control Center Admin.
 
-Version: **0.1.0**.
+Версия: **0.1.0**.
 
-## Current scope
+Язык проектной документации: **русский**. Технические идентификаторы, команды и имена API сохраняются в исходном виде.
 
-- Platform API v1 path contract
-- health/readiness/version/release models
-- shared account/admin models and role/permission enums
-- bounded GET-only `HttpURLConnection` transport
-- HTTPS required for non-loopback endpoints
-- redirects disabled
-- bounded response body
-- correlation ID validation/propagation
-- canonical `/api/v1` path enforcement
+## Текущий scope
 
-## Security boundary
+- контракт путей Platform API v1;
+- модели health/readiness/version/release;
+- общие модели account/admin и enum ролей/permissions;
+- ограниченный GET-only transport на `HttpURLConnection`;
+- обязательный HTTPS для endpoint вне loopback;
+- отключённые redirects;
+- ограниченный размер response body;
+- проверка и передача correlation ID;
+- принудительное использование канонических путей `/api/v1`.
 
-Server-side authorization, privileged operations and secrets are explicitly out of scope for the SDK. The SDK never turns UI visibility into authorization and does not embed production credentials.
+## Граница безопасности
 
-Authentication will be added only when the Control Center server session/RBAC/audit contract is implemented and tested.
+Server-side authorization, привилегированные операции и секреты намеренно не входят в scope SDK. SDK никогда не превращает видимость элементов UI в авторизацию и не содержит production credentials.
 
-See `API_COMPATIBILITY.md` for the consumer compatibility matrix.
+Аутентификация будет добавлена только после реализации и проверки server-side session/RBAC/audit-контракта Control Center.
+
+Матрица совместимости потребителей находится в `API_COMPATIBILITY.md`.
