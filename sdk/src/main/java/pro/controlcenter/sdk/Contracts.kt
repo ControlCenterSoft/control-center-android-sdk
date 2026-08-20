@@ -8,118 +8,121 @@ object ControlCenterApiContract {
         const val HEALTH = "$API_BASE/health"
         const val READINESS = "$API_BASE/readiness"
         const val VERSION = "$API_BASE/version"
-        const val RELEASE = "$API_BASE/release"
     }
 
-    object Account {
-        const val PROFILE = "$API_BASE/account"
-        const val SERVERS = "$API_BASE/account/servers"
-        const val SESSIONS = "$API_BASE/account/sessions"
-        const val NOTIFICATIONS = "$API_BASE/account/notifications"
+    object Auth {
+        const val LOGIN = "$API_BASE/auth/login"
+        const val SESSION = "$API_BASE/auth/session"
+        const val LOGOUT = "$API_BASE/auth/logout"
+        const val PASSWORD = "$API_BASE/auth/password"
     }
 
-    object Admin {
-        const val OVERVIEW = "$API_BASE/admin/overview"
-        const val USERS = "$API_BASE/admin/users"
-        const val SERVERS = "$API_BASE/admin/servers"
-        const val RELEASES = "$API_BASE/admin/releases"
-        const val OPERATIONS = "$API_BASE/admin/operations"
-        const val AUDIT = "$API_BASE/admin/audit"
+    object System {
+        const val STATUS = "$API_BASE/system/status"
+    }
+
+    object Rbac {
+        const val USERS = "$API_BASE/rbac/users"
+        private val USERNAME_RE = Regex("^[a-z][a-z0-9._-]{2,63}$")
+
+        fun blocked(username: String): String {
+            val normalized = username.trim().lowercase()
+            require(USERNAME_RE.matches(normalized)) {
+                "username must match ^[a-z][a-z0-9._-]{2,63}$"
+            }
+            return "$USERS/$normalized/blocked"
+        }
+    }
+
+    object Operations {
+        const val LIST = "$API_BASE/operations"
+    }
+
+    object Audit {
+        const val LIST = "$API_BASE/audit"
+    }
+
+    object Diagnostics {
+        const val SUMMARY = "$API_BASE/diagnostics/summary"
+        const val EXPORT = "$API_BASE/diagnostics/export"
     }
 }
 
-enum class ClientKind {
-    WEB,
-    ANDROID_CLIENT,
-    ANDROID_ADMIN
+enum class Role(val wireValue: String) {
+    VIEWER("viewer"),
+    ADMIN("admin");
+
+    companion object {
+        fun fromWire(value: String): Role = entries.firstOrNull { it.wireValue == value }
+            ?: throw IllegalArgumentException("unsupported role: $value")
+    }
 }
 
-enum class Role {
-    VIEWER,
-    ADMIN
-}
-
-enum class Permission {
-    ACCOUNT_READ,
-    ACCOUNT_SESSION_REVOKE,
-    SERVER_READ,
-    DIAGNOSTICS_READ,
-    ADMIN_USERS_READ,
-    ADMIN_SERVERS_READ,
-    ADMIN_RELEASES_READ,
-    ADMIN_AUDIT_READ
+enum class Permission(val wireValue: String) {
+    SYSTEM_READ("system.read"),
+    RBAC_USERS_READ("rbac.users.read"),
+    RBAC_USERS_WRITE("rbac.users.write"),
+    OPERATIONS_READ("operations.read"),
+    AUDIT_READ("audit.read"),
+    DIAGNOSTICS_EXPORT("diagnostics.export")
 }
 
 data class ApiError(
     val code: String,
     val message: String,
-    val correlationId: String? = null
+    val operationId: String? = null
+)
+
+data class PublicUser(
+    val username: String,
+    val role: Role,
+    val blocked: Boolean,
+    val mustChangePassword: Boolean,
+    val createdAt: String,
+    val passwordChangedAt: String
+)
+
+data class AuthSession(
+    val user: PublicUser,
+    val csrfToken: String
 )
 
 data class PlatformHealth(
     val status: String,
     val service: String,
-    val apiVersion: Int
+    val time: String
+)
+
+data class ReadinessCheck(
+    val name: String,
+    val ok: Boolean
 )
 
 data class PlatformReadiness(
     val status: String,
-    val service: String,
-    val deploymentManifest: String,
-    val release: String? = null
+    val ready: Boolean,
+    val checks: List<ReadinessCheck>
 )
 
 data class PlatformVersion(
-    val service: String,
-    val apiVersion: Int,
     val product: String,
     val version: String,
-    val channel: String,
+    val commit: String,
+    val builtAt: String,
+    val stateSchema: Int,
+    val operationsSchema: Int
+)
+
+data class PasswordChangeResult(
     val status: String,
-    val acceptance: String,
-    val sourceSha: String? = null
+    val reauthenticationRequired: Boolean
 )
 
-data class SessionInfo(
-    val sessionId: String,
-    val userId: String,
-    val role: Role,
-    val client: ClientKind,
-    val active: Boolean
+/**
+ * Состояние мобильной аутентификации без раскрытия значения cc_session.
+ * Сам session cookie хранится только внутри transport-слоя и не должен персистироваться клиентом.
+ */
+data class MobileSessionState(
+    val authenticated: Boolean,
+    val csrfToken: String? = null
 )
-
-data class ServerSummary(
-    val id: String,
-    val name: String,
-    val version: String,
-    val online: Boolean,
-    val health: String,
-    val readiness: String
-)
-
-data class ReleaseSummary(
-    val version: String,
-    val channel: String,
-    val status: String,
-    val acceptance: String
-)
-
-data class AccountSummary(
-    val userId: String,
-    val displayName: String,
-    val role: Role,
-    val serverCount: Int
-)
-
-data class AdminOverview(
-    val clients: Int,
-    val serversOnline: Int,
-    val serversOffline: Int,
-    val activeOperations: Int,
-    val securityEvents: Int
-)
-
-interface SessionController {
-    suspend fun logout()
-    suspend fun revokeSession(sessionId: String)
-}

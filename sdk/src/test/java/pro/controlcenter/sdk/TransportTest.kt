@@ -2,7 +2,10 @@ package pro.controlcenter.sdk
 
 import java.io.ByteArrayInputStream
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertThrows
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class TransportTest {
@@ -11,7 +14,40 @@ class TransportTest {
         assertEquals("/api/v1/health", ControlCenterApiContract.Platform.HEALTH)
         assertEquals("/api/v1/readiness", ControlCenterApiContract.Platform.READINESS)
         assertEquals("/api/v1/version", ControlCenterApiContract.Platform.VERSION)
-        assertEquals("/api/v1/release", ControlCenterApiContract.Platform.RELEASE)
+        assertEquals("/api/v1/auth/login", ControlCenterApiContract.Auth.LOGIN)
+        assertEquals("/api/v1/auth/session", ControlCenterApiContract.Auth.SESSION)
+        assertEquals("/api/v1/auth/logout", ControlCenterApiContract.Auth.LOGOUT)
+        assertEquals("/api/v1/auth/password", ControlCenterApiContract.Auth.PASSWORD)
+        assertEquals("/api/v1/system/status", ControlCenterApiContract.System.STATUS)
+        assertEquals("/api/v1/rbac/users", ControlCenterApiContract.Rbac.USERS)
+        assertEquals("/api/v1/operations", ControlCenterApiContract.Operations.LIST)
+        assertEquals("/api/v1/audit", ControlCenterApiContract.Audit.LIST)
+        assertEquals("/api/v1/diagnostics/summary", ControlCenterApiContract.Diagnostics.SUMMARY)
+        assertEquals("/api/v1/diagnostics/export", ControlCenterApiContract.Diagnostics.EXPORT)
+    }
+
+    @Test
+    fun rbacBlockedPathUsesServerUsernameContract() {
+        assertEquals(
+            "/api/v1/rbac/users/test.user/blocked",
+            ControlCenterApiContract.Rbac.blocked(" TEST.User ")
+        )
+        assertThrows(IllegalArgumentException::class.java) {
+            ControlCenterApiContract.Rbac.blocked("x")
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            ControlCenterApiContract.Rbac.blocked("admin/../root")
+        }
+    }
+
+    @Test
+    fun roleWireValuesMatchServerContract() {
+        assertEquals("viewer", Role.VIEWER.wireValue)
+        assertEquals("admin", Role.ADMIN.wireValue)
+        assertEquals(Role.ADMIN, Role.fromWire("admin"))
+        assertThrows(IllegalArgumentException::class.java) {
+            Role.fromWire("owner")
+        }
     }
 
     @Test
@@ -70,6 +106,41 @@ class TransportTest {
         assertThrows(IllegalArgumentException::class.java) {
             endpoint.resolve("/api/v1/%2e%2e/admin")
         }
+    }
+
+    @Test
+    fun sessionCookieIsCapturedWithoutExposingAttributes() {
+        val update = extractSessionCookie(
+            mapOf(
+                "Set-Cookie" to listOf(
+                    "cc_session=abcdefghijklmnopqrstuvwxyzABCDEFGH_123456789; Path=/; HttpOnly; Secure; SameSite=Strict"
+                )
+            )
+        )
+        assertTrue(update.present)
+        assertEquals("abcdefghijklmnopqrstuvwxyzABCDEFGH_123456789", update.value)
+    }
+
+    @Test
+    fun clearedOrMalformedSessionCookieFailsClosed() {
+        val cleared = extractSessionCookie(mapOf("set-cookie" to listOf("cc_session=; Max-Age=0; Path=/")))
+        assertTrue(cleared.present)
+        assertNull(cleared.value)
+
+        val malformed = extractSessionCookie(mapOf("Set-Cookie" to listOf("cc_session=bad token; Path=/")))
+        assertTrue(malformed.present)
+        assertNull(malformed.value)
+
+        val absent = extractSessionCookie(mapOf("Content-Type" to listOf("application/json")))
+        assertFalse(absent.present)
+        assertNull(absent.value)
+    }
+
+    @Test
+    fun operationIdUsesControlCenterHeaderContract() {
+        assertEquals("0123456789abcdef0123456789abcdef", validatedOperationId("0123456789abcdef0123456789abcdef"))
+        assertNull(validatedOperationId("bad id with spaces"))
+        assertNull(validatedOperationId(null))
     }
 
     @Test
