@@ -10,6 +10,7 @@ private const val DEFAULT_CONNECT_TIMEOUT_MS = 5_000
 private const val DEFAULT_READ_TIMEOUT_MS = 5_000
 private const val DEFAULT_MAX_RESPONSE_BYTES = 1_048_576
 private val CORRELATION_ID_RE = Regex("^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$")
+private val API_PATH_RE = Regex("^/api/v1(?:/[A-Za-z0-9._~-]+)*$")
 
 data class ControlCenterHttpResponse(
     val statusCode: Int,
@@ -59,11 +60,8 @@ class ControlCenterEndpoint private constructor(
     }
 
     fun resolve(path: String): URL {
-        require(path == ControlCenterApiContract.API_BASE || path.startsWith("${ControlCenterApiContract.API_BASE}/")) {
-            "path must stay inside ${ControlCenterApiContract.API_BASE}"
-        }
-        require(!path.contains('?') && !path.contains('#')) {
-            "API path must not contain query or fragment data"
+        require(API_PATH_RE.matches(path)) {
+            "path must be a canonical ${ControlCenterApiContract.API_BASE} path"
         }
         return URL(baseUrl + path)
     }
