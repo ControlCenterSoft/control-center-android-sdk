@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "recorded_at": "2026-08-20T09:41:33.061229Z",
-  "source_sha": "51f26db5a34266e0fa32b214d40aa6a2d66a5720",
-  "run_id": "32355069166",
+  "recorded_at": "2026-08-20T09:41:37.407815Z",
+  "source_sha": "4a3c71e51d0cffdac2d8ea0cc48ba82d459d01ef",
+  "run_id": "32355084587",
   "validate": "failure"
 }
