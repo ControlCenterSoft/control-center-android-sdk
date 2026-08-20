@@ -1,14 +1,16 @@
 # Feature parity matrix
 
-| Capability | Web | Android Client | Android Admin |
-|---|---|---|---|
-| Public release status | development | planned | planned |
-| Customer account | planned | shell | — |
-| Customer servers | planned | shell | — |
-| Notifications | planned | shell | — |
-| Admin overview | planned | — | shell |
-| Client management | planned | — | shell |
-| Server administration | planned | — | shell |
-| Audit / events | planned | — | shell |
+| Capability | Control Center 1.0.0 | Android Client | Android Admin | SDK 0.2.0-dev.1 |
+|---|---|---|---|---|
+| Health / readiness / version | production-ready | planned integration | planned integration | implemented |
+| Authentication / session | production-ready | next | next | transport implemented |
+| Password change | production-ready | next | next | transport implemented |
+| System status | production-ready | next | next | contract implemented |
+| RBAC users read | production-ready | — | next | contract implemented |
+| RBAC user create/block | production-ready | — | next | mutation transport implemented |
+| Operations | production-ready | — | next | contract implemented |
+| Audit | production-ready | — | next | contract implemented |
+| Diagnostics summary/export | production-ready | planned | next | contract + binary GET implemented |
+| Market / extended modules | later release | blocked by server | blocked by server | not exposed |
 
-`planned` and `shell` are not production availability claims. A capability becomes available only after its own acceptance and release manifest state permits it.
+`next` означает следующий мобильный этап, но не production availability. Клиентская возможность считается готовой только после интеграции UI/state-management, собственных build/lint/unit/API-contract/security проверок и acceptance.
