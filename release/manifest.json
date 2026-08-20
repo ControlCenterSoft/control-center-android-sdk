@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "product": "control-center-android-sdk",
+  "version": "0.1.0",
+  "status": "development",
+  "api_major": 1,
+  "api_compatibility": ">=1.0 <2.0",
+  "compile_sdk": 37,
+  "min_sdk": 26
+}
