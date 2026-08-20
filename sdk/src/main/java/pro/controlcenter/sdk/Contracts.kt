@@ -4,6 +4,13 @@ object ControlCenterApiContract {
     const val API_MAJOR = 1
     const val API_BASE = "/api/v1"
 
+    object Platform {
+        const val HEALTH = "$API_BASE/health"
+        const val READINESS = "$API_BASE/readiness"
+        const val VERSION = "$API_BASE/version"
+        const val RELEASE = "$API_BASE/release"
+    }
+
     object Account {
         const val PROFILE = "$API_BASE/account"
         const val SERVERS = "$API_BASE/account/servers"
@@ -47,6 +54,30 @@ data class ApiError(
     val code: String,
     val message: String,
     val correlationId: String? = null
+)
+
+data class PlatformHealth(
+    val status: String,
+    val service: String,
+    val apiVersion: Int
+)
+
+data class PlatformReadiness(
+    val status: String,
+    val service: String,
+    val deploymentManifest: String,
+    val release: String? = null
+)
+
+data class PlatformVersion(
+    val service: String,
+    val apiVersion: Int,
+    val product: String,
+    val version: String,
+    val channel: String,
+    val status: String,
+    val acceptance: String,
+    val sourceSha: String? = null
 )
 
 data class SessionInfo(
