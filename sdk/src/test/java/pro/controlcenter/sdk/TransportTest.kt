@@ -2,7 +2,7 @@ package pro.controlcenter.sdk
 
 import java.io.ByteArrayInputStream
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFailsWith
+import org.junit.Assert.assertThrows
 import org.junit.Test
 
 class TransportTest {
@@ -25,14 +25,14 @@ class TransportTest {
 
     @Test
     fun publicHttpEndpointIsRejected() {
-        assertFailsWith<IllegalArgumentException> {
+        assertThrows(IllegalArgumentException::class.java) {
             ControlCenterEndpoint.parse("http://control-center.example")
         }
     }
 
     @Test
     fun loopbackHttpRequiresExplicitOptIn() {
-        assertFailsWith<IllegalArgumentException> {
+        assertThrows(IllegalArgumentException::class.java) {
             ControlCenterEndpoint.parse("http://127.0.0.1:8876")
         }
         val endpoint = ControlCenterEndpoint.parse(
@@ -47,10 +47,10 @@ class TransportTest {
 
     @Test
     fun baseUrlCannotCarryCredentialsOrApplicationPath() {
-        assertFailsWith<IllegalArgumentException> {
+        assertThrows(IllegalArgumentException::class.java) {
             ControlCenterEndpoint.parse("https://user:pass@control-center.example")
         }
-        assertFailsWith<IllegalArgumentException> {
+        assertThrows(IllegalArgumentException::class.java) {
             ControlCenterEndpoint.parse("https://control-center.example/private")
         }
     }
@@ -58,10 +58,10 @@ class TransportTest {
     @Test
     fun resolvedPathCannotEscapeApiV1() {
         val endpoint = ControlCenterEndpoint.parse("https://control-center.example")
-        assertFailsWith<IllegalArgumentException> {
+        assertThrows(IllegalArgumentException::class.java) {
             endpoint.resolve("/admin")
         }
-        assertFailsWith<IllegalArgumentException> {
+        assertThrows(IllegalArgumentException::class.java) {
             endpoint.resolve("/api/v1/health?token=secret")
         }
     }
@@ -75,7 +75,7 @@ class TransportTest {
 
     @Test
     fun boundedReaderRejectsOversizedBody() {
-        assertFailsWith<IllegalStateException> {
+        assertThrows(IllegalStateException::class.java) {
             readBoundedUtf8(ByteArrayInputStream("abcde".toByteArray()), 4)
         }
     }
