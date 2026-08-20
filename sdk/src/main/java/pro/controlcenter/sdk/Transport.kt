@@ -63,6 +63,10 @@ class ControlCenterEndpoint private constructor(
         require(API_PATH_RE.matches(path)) {
             "path must be a canonical ${ControlCenterApiContract.API_BASE} path"
         }
+        val segments = path.split('/').drop(3)
+        require(segments.none { it == "." || it == ".." }) {
+            "API path must not contain traversal segments"
+        }
         return URL(baseUrl + path)
     }
 }
