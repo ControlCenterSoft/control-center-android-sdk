@@ -46,6 +46,10 @@ object ControlCenterApiContract {
         const val SUMMARY = "$API_BASE/diagnostics/summary"
         const val EXPORT = "$API_BASE/diagnostics/export"
     }
+
+    object Fleet {
+        const val NODES = "$API_BASE/fleet/nodes"
+    }
 }
 
 enum class Role(val wireValue: String) {
@@ -64,7 +68,9 @@ enum class Permission(val wireValue: String) {
     RBAC_USERS_WRITE("rbac.users.write"),
     OPERATIONS_READ("operations.read"),
     AUDIT_READ("audit.read"),
-    DIAGNOSTICS_EXPORT("diagnostics.export")
+    DIAGNOSTICS_EXPORT("diagnostics.export"),
+    FLEET_NODES_READ("fleet.nodes.read"),
+    FLEET_NODES_WRITE("fleet.nodes.write")
 }
 
 data class ApiError(
@@ -116,6 +122,22 @@ data class PlatformVersion(
 data class PasswordChangeResult(
     val status: String,
     val reauthenticationRequired: Boolean
+)
+
+data class FleetNode(
+    val id: String,
+    val name: String,
+    val address: String,
+    val group: String,
+    val environment: String,
+    val status: String,
+    val createdAt: String,
+    val updatedAt: String
+)
+
+data class FleetSummary(
+    val total: Int,
+    val pendingEnrollment: Int
 )
 
 /**
