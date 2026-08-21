@@ -25,13 +25,16 @@ jobs:
 
     steps:
       - name: Checkout trusted repository state
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
       - name: Run Claude Code
-        uses: anthropics/claude-code-action@v1
+        uses: anthropics/claude-code-action@6b082c41935b4c8a3b8b0ef85ba4ba4d9eeb8975 # v1.0.189
         with:
+          # Force the action to use this workflow's short-lived, repo-scoped GITHUB_TOKEN.
+          # Do not fall back to a broader Claude GitHub App installation token.
+          github_token: ${{ github.token }}
           label_trigger: 'claude:ready'
           base_branch: 'main'
           branch_prefix: 'claude/'
