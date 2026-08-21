@@ -19,11 +19,33 @@ class TransportTest {
         assertEquals("/api/v1/auth/logout", ControlCenterApiContract.Auth.LOGOUT)
         assertEquals("/api/v1/auth/password", ControlCenterApiContract.Auth.PASSWORD)
         assertEquals("/api/v1/system/status", ControlCenterApiContract.System.STATUS)
+        assertEquals("/api/v1/fleet/nodes", ControlCenterApiContract.Fleet.NODES)
         assertEquals("/api/v1/rbac/users", ControlCenterApiContract.Rbac.USERS)
         assertEquals("/api/v1/operations", ControlCenterApiContract.Operations.LIST)
         assertEquals("/api/v1/audit", ControlCenterApiContract.Audit.LIST)
         assertEquals("/api/v1/diagnostics/summary", ControlCenterApiContract.Diagnostics.SUMMARY)
         assertEquals("/api/v1/diagnostics/export", ControlCenterApiContract.Diagnostics.EXPORT)
+    }
+
+    @Test
+    fun fleetModelsPreserveServerInventorySemantics() {
+        val node = FleetNode(
+            id = "srv-01",
+            name = "srv-01",
+            address = "10.10.0.11",
+            group = "office",
+            environment = "production",
+            status = "pending_enrollment",
+            createdAt = "2026-08-21T08:00:00Z",
+            updatedAt = "2026-08-21T08:00:00Z"
+        )
+        val inventory = FleetInventory(
+            nodes = listOf(node),
+            summary = FleetSummary(total = 1, pendingEnrollment = 1)
+        )
+        assertEquals("pending_enrollment", inventory.nodes.single().status)
+        assertEquals(1, inventory.summary.total)
+        assertEquals(1, inventory.summary.pendingEnrollment)
     }
 
     @Test
