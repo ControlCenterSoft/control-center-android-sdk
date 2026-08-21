@@ -36,16 +36,19 @@ class TransportTest {
             group = "office",
             environment = "production",
             status = "pending_enrollment",
+            agentVersion = "1.1.2",
             createdAt = "2026-08-21T08:00:00Z",
             updatedAt = "2026-08-21T08:00:00Z"
         )
         val inventory = FleetInventory(
             nodes = listOf(node),
-            summary = FleetSummary(total = 1, pendingEnrollment = 1)
+            summary = FleetSummary(total = 1, pendingEnrollment = 1, enrolled = 0)
         )
         assertEquals("pending_enrollment", inventory.nodes.single().status)
+        assertEquals("1.1.2", inventory.nodes.single().agentVersion)
         assertEquals(1, inventory.summary.total)
         assertEquals(1, inventory.summary.pendingEnrollment)
+        assertEquals(0, inventory.summary.enrolled)
     }
 
     @Test
