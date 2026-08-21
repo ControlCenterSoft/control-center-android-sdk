@@ -23,6 +23,13 @@ object ControlCenterApiContract {
 
     object Fleet {
         const val NODES = "$API_BASE/fleet/nodes"
+        private val NODE_ID_RE = Regex("^[a-zA-Z0-9._:-]{1,128}$")
+
+        fun enrollment(nodeId: String): String {
+            val normalized = nodeId.trim()
+            require(NODE_ID_RE.matches(normalized)) { "invalid fleet node id" }
+            return "$NODES/$normalized/enrollment"
+        }
     }
 
     object Rbac {
@@ -124,13 +131,15 @@ data class FleetNode(
     val group: String? = null,
     val environment: String? = null,
     val status: String,
+    val agentVersion: String? = null,
     val createdAt: String,
     val updatedAt: String
 )
 
 data class FleetSummary(
     val total: Int,
-    val pendingEnrollment: Int
+    val pendingEnrollment: Int,
+    val enrolled: Int
 )
 
 data class FleetInventory(
