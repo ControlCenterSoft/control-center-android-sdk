@@ -26,6 +26,19 @@ class FleetContractTest {
     }
 
     @Test
+    fun enrollmentRejectsIdsOutsideCoreContract() {
+        assertThrows(IllegalArgumentException::class.java) {
+            ControlCenterApiContract.Fleet.enrollment(".node")
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            ControlCenterApiContract.Fleet.enrollment("node:01")
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            ControlCenterApiContract.Fleet.enrollment("n".repeat(65))
+        }
+    }
+
+    @Test
     fun fleetSummaryCarriesCoreEnrollmentCounters() {
         val summary = FleetSummary(total = 4, pendingEnrollment = 1, enrolled = 3)
         assertEquals(4, summary.total)
