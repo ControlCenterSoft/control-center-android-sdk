@@ -21,6 +21,10 @@ object ControlCenterApiContract {
         const val STATUS = "$API_BASE/system/status"
     }
 
+    object Fleet {
+        const val NODES = "$API_BASE/fleet/nodes"
+    }
+
     object Rbac {
         const val USERS = "$API_BASE/rbac/users"
         private val USERNAME_RE = Regex("^[a-z][a-z0-9._-]{2,63}$")
@@ -111,6 +115,34 @@ data class PlatformVersion(
     val builtAt: String,
     val stateSchema: Int,
     val operationsSchema: Int
+)
+
+data class FleetNode(
+    val id: String,
+    val name: String,
+    val address: String,
+    val group: String? = null,
+    val environment: String? = null,
+    val status: String,
+    val createdAt: String,
+    val updatedAt: String
+)
+
+data class FleetSummary(
+    val total: Int,
+    val pendingEnrollment: Int
+)
+
+data class FleetInventory(
+    val nodes: List<FleetNode>,
+    val summary: FleetSummary
+)
+
+data class CreateFleetNodeRequest(
+    val name: String,
+    val address: String,
+    val group: String? = null,
+    val environment: String? = null
 )
 
 data class PasswordChangeResult(
