@@ -23,7 +23,7 @@ object ControlCenterApiContract {
 
     object Fleet {
         const val NODES = "$API_BASE/fleet/nodes"
-        private val NODE_ID_RE = Regex("^[a-zA-Z0-9._:-]{1,128}$")
+        private val NODE_ID_RE = Regex("^[a-zA-Z0-9][a-zA-Z0-9._-]{1,63}$")
 
         fun enrollment(nodeId: String): String {
             val normalized = nodeId.trim()
